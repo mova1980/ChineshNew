@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 280">
+  <defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="b1" />
+      <feFlood flood-color="#FFB84D" result="c" />
+      <feComposite in="c" in2="b1" operator="in" result="g1" />
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="b2" />
+      <feFlood flood-color="#FFD27F" result="c2" />
+      <feComposite in="c2" in2="b2" operator="in" result="g2" />
+      <feMerge>
+        <feMergeNode in="g1" />
+        <feMergeNode in="g2" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- Top three dots -->
+  <g fill="#FFD700" filter="url(#glow)">
+    <circle cx="215" cy="60" r="14" />
+    <circle cx="255" cy="60" r="14" />
+    <circle cx="295" cy="60" r="14" />
+  </g>
+  <!-- stylized "چینش" -->
+  <g fill="#EAF1FF" filter="url(#glow)">
+    <!-- چ (Che) -->
+    <path d="M70 180 C 70 120, 110 95, 140 95 C 175 95, 195 120, 195 155 C 195 190, 170 215, 135 215 C 105 215, 75 200, 70 180 Z M 110 160 C 115 145, 130 140, 145 145 C 158 150, 165 165, 162 180 C 160 192, 150 200, 140 200 C 125 200, 112 185, 110 160 Z" />
+    <!-- ی (Ye - vertical) -->
+    <rect x="210" y="95" width="14" height="115" rx="3" />
+    <!-- ن (Noon) -->
+    <path d="M240 200 L 275 140 L 310 200 Z M 260 195 L 275 165 L 290 195 Z" />
+    <path d="M240 200 L 275 215 L 310 200 L 310 210 L 275 225 L 240 210 Z" />
+    <!-- ش (She) -->
+    <path d="M320 95 L 380 95 C 415 95, 440 120, 440 155 C 440 190, 415 215, 380 215 L 320 215 Z M 340 115 L 340 195 L 380 195 C 400 195, 415 180, 415 155 C 415 130, 400 115, 380 115 Z" />
+    <!-- bottom dots for she -->
+    <circle cx="345" cy="240" r="10" fill="#FFD700" filter="url(#glow)" />
+    <circle cx="375" cy="240" r="10" fill="#FFD700" filter="url(#glow)" />
+    <circle cx="405" cy="240" r="10" fill="#FFD700" filter="url(#glow)" />
+  </g>
+  <!-- Subtext -->
+  <g fill="#FFD27F">
+    <text x="300" y="275" font-family="Tahoma, sans-serif" font-size="22" font-weight="bold" text-anchor="middle">پایگاه خبری</text>
+  </g>
+</svg>
