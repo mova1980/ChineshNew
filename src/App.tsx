@@ -14,6 +14,7 @@ import AdminPanel from "./components/AdminPanel";
 import ArchivePage from "./components/ArchivePage";
 import { useApp } from "./context/AppContext";
 import { useEffect } from "react";
+import { Analytics } from "@vercel/analytics/react";
 
 /* ─── Scroll-to-hash helper: whenever the hash changes to an in-page anchor, scroll to it ─── */
 function useHashScroll() {
@@ -108,6 +109,7 @@ export default function App() {
           {showFooter && <Footer />}
         </main>
         <LoginModal />
+        <Analytics />
       </div>
     </AppProvider>
   );
