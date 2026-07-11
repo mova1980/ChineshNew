@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Plus, Trash2, Edit3, Save, X,
+  Plus, Trash2, Edit3, Save,
   Newspaper, Images, Zap, List,
   Mail, LogOut, Menu,
   LayoutDashboard, ChevronRight,
@@ -11,6 +11,7 @@ import { useApp } from "../context/AppContext";
 import type { NewsItem, GalleryImage, NavItem } from "../data/store";
 import { HeroSettings, PasswordSettings } from "./AdminSettings";
 import AdminMediaManager from "./AdminMediaManager";
+import NewsEditorModal from "./NewsEditorModal";
 import { uploadMedia } from "../lib/db";
 
 /* ─────────────────────── helpers ─────────────────────── */
@@ -111,15 +112,7 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
 
   const ok = (msg: string) => setToast(msg);
 
-  /* ── save news ── */
-  const saveNews = (section: "featured"|"latest"|"highlights", item: NewsItem) => {
-    if (!item.title.fa.trim()) { alert("عنوان فارسی الزامی است"); return; }
-    const exists = data[section].some(n => n.id === item.id);
-    if (exists) updateNews(section, item.id, item);
-    else        addNews(section, item);
-    setEditing(null);
-    ok(exists ? "خبر ویرایش شد ✓" : "خبر جدید اضافه شد ✓");
-  };
+
 
   /* ── tabs config ── */
   const tabs = [
@@ -139,141 +132,6 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
   /* ══════════════════════════════════════════════════════
      NEWS EDITOR MODAL
   ══════════════════════════════════════════════════════ */
-  const NewsEditor = ({ section }: { section:"featured"|"latest"|"highlights" }) => (
-    <AnimatePresence>
-      {editing && (
-        <motion.div
-          initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
-          className="fixed inset-0 z-[500] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
-          onClick={e => e.target === e.currentTarget && setEditing(null)}
-        >
-          <motion.div
-            initial={{ scale:0.9, y:30 }} animate={{ scale:1, y:0 }} exit={{ scale:0.9, y:30 }}
-            className="w-full max-w-2xl glass rounded-3xl shadow-2xl overflow-hidden"
-            dir="rtl"
-          >
-            {/* Modal header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-gradient-to-l from-orange-500/10 to-transparent">
-              <h3 className="text-lg font-black text-white flex items-center gap-2">
-                <Edit3 size={18} className="text-orange-400" />
-                {data[section].some(n=>n.id===editing.id) ? "ویرایش خبر" : "افزودن خبر جدید"}
-              </h3>
-              <button onClick={()=>setEditing(null)} className="w-8 h-8 rounded-full bg-white/10 hover:bg-red-500/30 text-white flex items-center justify-center">
-                <X size={15} />
-              </button>
-            </div>
-
-            {/* Modal body */}
-            <div className="p-6 space-y-4 overflow-y-auto max-h-[70vh]">
-              {/* Title */}
-              <div className="grid grid-cols-1 gap-2">
-                <BiField label="عنوان فارسی *">
-                  <input value={editing.title.fa} onChange={e=>setEditing({...editing,title:{...editing.title,fa:e.target.value}})}
-                    placeholder="عنوان خبر به فارسی..." className={inp} />
-                </BiField>
-                <BiField label="Title (English)">
-                  <input value={editing.title.en} onChange={e=>setEditing({...editing,title:{...editing.title,en:e.target.value}})}
-                    placeholder="News title in English..." className={inp} dir="ltr" />
-                </BiField>
-              </div>
-
-              {/* Subtitle */}
-              <div className="grid grid-cols-2 gap-2">
-                <BiField label="زیرعنوان فارسی">
-                  <input value={editing.subtitle?.fa||""} onChange={e=>setEditing({...editing,subtitle:{fa:e.target.value,en:editing.subtitle?.en||""}})}
-                    placeholder="اختیاری..." className={inp} />
-                </BiField>
-                <BiField label="Subtitle EN">
-                  <input value={editing.subtitle?.en||""} onChange={e=>setEditing({...editing,subtitle:{fa:editing.subtitle?.fa||"",en:e.target.value}})}
-                    placeholder="Optional..." className={inp} dir="ltr" />
-                </BiField>
-              </div>
-
-              {/* Excerpt */}
-              <BiField label="خلاصه خبر (فارسی) *">
-                <textarea value={editing.excerpt.fa} rows={3}
-                  onChange={e=>setEditing({...editing,excerpt:{...editing.excerpt,fa:e.target.value}})}
-                  placeholder="خلاصه خبر..." className={inp+" resize-none"} />
-              </BiField>
-              <BiField label="Excerpt (English)">
-                <textarea value={editing.excerpt.en} rows={2}
-                  onChange={e=>setEditing({...editing,excerpt:{...editing.excerpt,en:e.target.value}})}
-                  placeholder="News excerpt..." className={inp+" resize-none"} dir="ltr" />
-              </BiField>
-
-              {/* Body */}
-              <BiField label="متن کامل خبر (فارسی)">
-                <textarea value={editing.body?.fa||""} rows={5}
-                  onChange={e=>setEditing({...editing,body:{fa:e.target.value,en:editing.body?.en||""}})}
-                  placeholder="متن کامل..." className={inp+" resize-none"} />
-              </BiField>
-              <BiField label="Full body (English)">
-                <textarea value={editing.body?.en||""} rows={4}
-                  onChange={e=>setEditing({...editing,body:{fa:editing.body?.fa||"",en:e.target.value}})}
-                  placeholder="Full news body..." className={inp+" resize-none"} dir="ltr" />
-              </BiField>
-
-              {/* Image URL */}
-              <BiField label="آدرس تصویر (URL)">
-                <div className="flex gap-2">
-                  <input value={editing.image}
-                    onChange={e=>setEditing({...editing,image:e.target.value})}
-                    placeholder="https://example.com/image.jpg" className={inp + " flex-1"} dir="ltr" />
-                  <InlineUploadButton onUploaded={(url)=>setEditing({...editing,image:url})} />
-                </div>
-                {editing.image && (
-                  <div className="mt-2 rounded-xl overflow-hidden h-36 border border-white/10">
-                    <img src={editing.image} alt="" className="w-full h-full object-cover"
-                      onError={e=>{(e.target as HTMLImageElement).style.display="none"}} />
-                  </div>
-                )}
-              </BiField>
-
-              {/* Category + Date */}
-              <div className="grid grid-cols-2 gap-3">
-                <BiField label="دسته‌بندی">
-                  <select value={editing.category}
-                    onChange={e=>setEditing({...editing,category:e.target.value as any})}
-                    className={inp}>
-                    <option value="city">شهری / Urban</option>
-                    <option value="culture">فرهنگی / Culture</option>
-                    <option value="society">اجتماعی / Society</option>
-                    <option value="economy">اقتصادی / Economy</option>
-                    <option value="sport">ورزشی / Sport</option>
-                    <option value="photo">تصویری / Photo</option>
-                  </select>
-                </BiField>
-                <BiField label="تاریخ نمایش">
-                  <input value={editing.date.fa}
-                    onChange={e=>setEditing({...editing,date:{fa:e.target.value,en:editing.date.en}})}
-                    className={inp} />
-                </BiField>
-              </div>
-
-              <label className="flex items-center gap-2 text-white/75 text-sm cursor-pointer select-none">
-                <input type="checkbox" checked={!!editing.isPhoto}
-                  onChange={e=>setEditing({...editing,isPhoto:e.target.checked})}
-                  className="w-4 h-4 accent-orange-500 rounded" />
-                گزارش تصویری
-              </label>
-            </div>
-
-            {/* Modal footer */}
-            <div className="flex gap-3 px-6 py-4 border-t border-white/10 bg-navy-950/30">
-              <button onClick={()=>saveNews(section,editing)}
-                className="flex-1 h-11 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold flex items-center justify-center gap-2 shadow-lg shadow-orange-500/30 hover:scale-[1.02] transition-transform">
-                <Save size={16} /> ذخیره خبر
-              </button>
-              <button onClick={()=>setEditing(null)}
-                className="h-11 px-5 rounded-2xl bg-white/5 border border-white/10 text-white font-medium hover:bg-white/10 transition-colors">
-                انصراف
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
 
   /* ══════════════════════════════════════════════════════
      NEWS LIST SECTION
@@ -340,7 +198,23 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
         )}
 
         {/* Editor modal */}
-        <NewsEditor section={section} />
+        <NewsEditorModal
+          open={editing !== null}
+          news={editing}
+          existingNews={data[section]}
+          onClose={() => setEditing(null)}
+          onSave={(item) => {
+            const exists = data[section].find((n) => n.id === item.id);
+            if (exists) {
+              updateNews(section, item.id, item);
+              ok("خبر ویرایش شد ✓");
+            } else {
+              addNews(section, item);
+              ok("خبر جدید اضافه شد ✓");
+            }
+            setEditing(null);
+          }}
+        />
       </div>
     );
   };
