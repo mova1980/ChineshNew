@@ -21,7 +21,15 @@ export type NewsItem = {
   updatedAt?: string;
 };
 
-export type GalleryImage = { id?: string; src: string; label: { fa: string; en: string }; span: string; position?: number };
+export type GalleryImage = { 
+  id?: string; 
+  src: string; 
+  label: { fa: string; en: string }; 
+  span: string; 
+  position?: number;
+  date?: { fa: string; en: string };
+  createdAt?: string;
+};
 
 export type HeroCards = {
   top: { fa: string; en: string };

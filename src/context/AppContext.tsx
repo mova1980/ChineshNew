@@ -95,39 +95,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setAdminPassState(getAdminPassword());
 
     // If Supabase is configured, hydrate the whole site from the database.
+    // If the DB is empty, seed it once from the current local/default content.
     if (isSupabaseConfigured && supabase) {
-      console.log("[Chinesh] Supabase is configured — loading from database...");
       (async () => {
         try {
           const { data: sessionData } = await supabase.auth.getSession();
           const isSignedIn = Boolean(sessionData.session);
-          if (isSignedIn) {
-            setAdminAuthState(true);
-            console.log("[Chinesh] Admin session detected");
-            await syncInitialData(local);
-          }
+          if (isSignedIn) setAdminAuthState(true);
+
+          // Seeding requires an authenticated admin session because RLS blocks public writes.
+          if (isSignedIn) await syncInitialData(local);
 
           const remote = await fetchRemoteSiteData();
-          if (remote) {
-            console.log("[Chinesh] Loaded from Supabase:", {
-              featured: remote.featured.length,
-              latest: remote.latest.length,
-              highlights: remote.highlights.length,
-              breaking: remote.breaking.length,
-              gallery: remote.gallery.length,
-              nav: remote.nav.length,
-            });
+          const remoteHasVisibleContent =
+            remote &&
+            (remote.nav.length || remote.featured.length || remote.latest.length || remote.highlights.length || remote.gallery.length);
+          if (remote && remoteHasVisibleContent) {
             setDataState(remote);
             saveSiteData(remote);
-          } else {
-            console.warn("[Chinesh] Supabase returned empty data; using local");
           }
         } catch (error) {
-          console.error("[Chinesh] Supabase load failed:", error);
+          console.warn("Supabase load failed; using local fallback", error);
         }
       })();
-    } else {
-      console.log("[Chinesh] Supabase NOT configured — using localStorage only");
     }
   }, []);
 

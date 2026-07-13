@@ -65,19 +65,12 @@ export async function fetchRemoteSiteData(): Promise<SiteData | null> {
     supabase.from("newsletter_subscribers").select("*").order("created_at", { ascending: false }),
   ]);
 
-  // Log each error individually for easier debugging
-  if (settingsRes.error)   console.error("[Chinesh] site_settings fetch error:", settingsRes.error);
-  if (newsRes.error)       console.error("[Chinesh] news_items fetch error:", newsRes.error);
-  if (galleryRes.error)    console.error("[Chinesh] gallery_images fetch error:", galleryRes.error);
-  if (navRes.error)        console.error("[Chinesh] nav_items fetch error:", navRes.error);
-  if (breakingRes.error)   console.error("[Chinesh] breaking_news fetch error:", breakingRes.error);
-  if (newsletterRes.error) console.error("[Chinesh] newsletter_subscribers fetch error:", newsletterRes.error);
-
-  // If ALL queries failed, give up. Otherwise continue with whatever succeeded.
-  const allFailed =
-    settingsRes.error && newsRes.error && galleryRes.error &&
-    navRes.error && breakingRes.error && newsletterRes.error;
-  if (allFailed) throw new Error("All Supabase queries failed — check RLS policies");
+  if (settingsRes.error) throw settingsRes.error;
+  if (newsRes.error) throw newsRes.error;
+  if (galleryRes.error) throw galleryRes.error;
+  if (navRes.error) throw navRes.error;
+  if (breakingRes.error) throw breakingRes.error;
+  if (newsletterRes.error) throw newsletterRes.error;
 
   const news = (newsRes.data || []).map(mapNewsRow);
   const featured = news.filter((n) => n.section === "featured");

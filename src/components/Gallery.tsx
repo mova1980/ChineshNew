@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Maximize2 } from "lucide-react";
+import { Maximize2, Calendar } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import GalleryLightbox from "./GalleryLightbox";
 
@@ -55,11 +55,21 @@ export default function Gallery() {
                   }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/20 to-transparent opacity-90" />
-                <div className="absolute bottom-4 right-4 text-right">
+                <div className="absolute bottom-4 right-4 left-4 text-right">
                   <div className="text-xs text-orange-300 mb-1">
                     {lang === "fa" ? "کرج" : "Karaj"}
                   </div>
-                  <div className="text-white font-bold text-sm md:text-base">{g.label[lang]}</div>
+                  <div className="text-white font-bold text-sm md:text-base mb-1">{g.label[lang]}</div>
+                  {g.createdAt && (
+                    <div className="flex items-center gap-1 text-[10px] text-white/60">
+                      <Calendar size={10} />
+                      <span>{new Date(g.createdAt).toLocaleDateString(lang === 'fa' ? 'fa-IR' : 'en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}</span>
+                    </div>
+                  )}
                 </div>
                 {/* Zoom badge */}
                 <div className="absolute top-3 left-3 w-9 h-9 rounded-full bg-black/50 backdrop-blur-md border border-white/20 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity">

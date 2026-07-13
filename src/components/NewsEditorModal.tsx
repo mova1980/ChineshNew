@@ -178,7 +178,7 @@ export default function NewsEditorModal({ open, news, existingNews, onClose, onS
               </div>
 
               {/* Category & Date */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs text-white/60 font-medium mb-1">دسته‌بندی</label>
                   <select
@@ -195,13 +195,37 @@ export default function NewsEditorModal({ open, news, existingNews, onClose, onS
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs text-white/60 font-medium mb-1">تاریخ نمایش</label>
+                  <label className="block text-xs text-white/60 font-medium mb-1">تاریخ نمایش (فارسی)</label>
                   <input
                     value={item.date.fa}
                     onChange={(e) => setItem({ ...item, date: { ...item.date, fa: e.target.value } })}
+                    placeholder="مثال: ۱۰ مهر ۱۴۰۵"
                     className={inp}
                   />
                 </div>
+                <div>
+                  <label className="block text-xs text-white/60 font-medium mb-1">Date (English)</label>
+                  <input
+                    value={item.date.en}
+                    onChange={(e) => setItem({ ...item, date: { ...item.date, en: e.target.value } })}
+                    placeholder="e.g., Oct 10, 2025"
+                    className={inp}
+                    dir="ltr"
+                  />
+                </div>
+              </div>
+
+              {/* Actual news date for relative time calculation */}
+              <div>
+                <label className="block text-xs text-white/60 font-medium mb-1">تاریخ واقعی خبر (برای محاسبه خودکار زمان نسبی)</label>
+                <input
+                  type="date"
+                  value={item.createdAt ? item.createdAt.split('T')[0] : ''}
+                  onChange={(e) => setItem({ ...item, createdAt: e.target.value ? new Date(e.target.value).toISOString() : undefined })}
+                  className={inp}
+                  dir="ltr"
+                />
+                <p className="text-[10px] text-white/40 mt-1">اگر این فیلد را پر کنید، زمان نسبی (مثلاً «۳ روز قبل») به‌طور خودکار محاسبه می‌شود</p>
               </div>
 
               {/* Photo checkbox */}

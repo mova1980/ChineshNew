@@ -256,7 +256,8 @@ export default function ArchivePage({ initialCategory }: { initialCategory?: str
                     <p className="text-xs text-white/60 line-clamp-2 mb-4 flex-1">{n.excerpt[lang]}</p>
                     <div className="flex items-center justify-between text-xs text-white/50">
                       <div className="flex items-center gap-1.5">
-                        <Clock size={11} /> <span>{n.date[lang]}</span>
+                        <Clock size={11} />
+                        <span>{n.date[lang]}</span>
                       </div>
                       <span className="text-orange-400 group-hover:-translate-x-1 transition-transform flex items-center gap-1">
                         <ArrowUpRight size={12} /> {t.sections.readMore}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Download } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Download, Calendar } from "lucide-react";
 import type { GalleryImage } from "../data/store";
 import { useApp } from "../context/AppContext";
 
@@ -69,6 +69,16 @@ export default function GalleryLightbox({ images, index, onClose, onNav }: Props
               <div className="text-white font-bold text-sm md:text-base mt-0.5">
                 {current.label[lang]}
               </div>
+              {current.createdAt && (
+                <div className="flex items-center gap-1 text-[10px] text-white/60 mt-1">
+                  <Calendar size={10} />
+                  <span>{new Date(current.createdAt).toLocaleDateString(lang === 'fa' ? 'fa-IR' : 'en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}</span>
+                </div>
+              )}
             </div>
             <div className="flex items-center gap-2">
               <button

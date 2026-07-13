@@ -414,6 +414,16 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
                           <option value="col-span-12 md:col-span-4 aspect-[16/9] md:h-[280px]">عریض (4 ستون)</option>
                         </select>
                       </BiField>
+                      <BiField label="تاریخ عکس (اختیاری)">
+                        <input
+                          type="date"
+                          value={gForm.createdAt ? gForm.createdAt.split('T')[0] : ''}
+                          onChange={(e) => setGForm({ ...gForm, createdAt: e.target.value ? new Date(e.target.value).toISOString() : undefined })}
+                          className={inp}
+                          dir="ltr"
+                        />
+                        <p className="text-[10px] text-white/40 mt-1">برای نمایش تاریخ در نگارخانه</p>
+                      </BiField>
                       <div className="flex gap-2">
                         <button onClick={()=>{
                           if(!gForm.src.trim()){alert("آدرس تصویر الزامی است");return;}

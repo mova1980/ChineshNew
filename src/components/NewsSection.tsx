@@ -99,7 +99,7 @@ export default function NewsSection() {
                   </h4>
                   <p className="text-xs text-white/60 line-clamp-2 mt-1">{n.excerpt[lang]}</p>
                   <div className="flex items-center gap-2 justify-end text-[10px] text-white/50 mt-2">
-                    <span>{n.date[lang]}</span>
+                    <span>{n.createdAt ? new Date(n.createdAt).toLocaleDateString('fa-IR') : n.date[lang]}</span>
                     <Clock size={10} />
                   </div>
                 </div>
@@ -151,7 +151,7 @@ export default function NewsSection() {
                 <p className="text-xs text-white/60 line-clamp-2 mb-4 flex-1">{n.excerpt[lang]}</p>
                 <div className="flex items-center justify-between text-xs text-white/50 flex-row-reverse">
                   <div className="flex items-center gap-1.5">
-                    <span>{n.date[lang]}</span>
+                    <span>{n.createdAt ? new Date(n.createdAt).toLocaleDateString('fa-IR') : n.date[lang]}</span>
                     <Clock size={11} />
                   </div>
                   <span className="text-orange-400 group-hover:translate-x-1 transition-transform flex items-center gap-1">
